@@ -1,0 +1,23 @@
+questions:
+  - question_id: 7
+    question_type: code_fib
+    language: go
+    question_text: "Fill in the missing parts of the Go program:"
+    question_code: |
+      package main
+
+      import (
+          "<<fmt>>"
+          "<<math>>"
+      )
+
+      func calculateArea(radius float64) float64 {
+          return <<math>>.<<Pi>> * radius * radius
+      }
+
+      func main() {
+          var r float64 = 5.5
+          area := calculateArea(r)
+          <<fmt>>.<<Printf>>("Area: %.2f\n", area)
+      }
+    case_sensitive: true

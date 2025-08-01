@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Code Fill-in Renderer</title>
+  <style>
+    body {
+      background: #2d2d2d;
+      color: #ccc;
+      font-family: monospace;
+      padding: 30px;
+    }
+
+    .code-container {
+      background: #1e1e1e;
+      border-radius: 8px;
+      padding: 20px;
+      white-space: pre-wrap;
+      line-height: 1.5em;
+      font-size: 16px;
+    }
+
+    .blank-input {
+      background: transparent;
+      color: #ffd700;
+      border: none;
+      border-bottom: 2px solid #888;
+      font-family: inherit;
+      font-size: inherit;
+    }
+
+    .blank-input:focus {
+      outline: none;
+      border-color: #fff;
+    }
+
+    #file-input {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<h2 id="question-text">Question</h2>
+<input type="file" id="file-input" accept=".yaml,.yml">
+<div class="code-container" id="code-box"></div>
+
+<!-- JS libraries -->
+<script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+
+<script>
+document.getElementById('file-input').addEventListener('change', async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const text = await file.text();
+  let yamlData;
+  try {
+    yamlData = jsyaml.load(text);
+  } catch (e) {
+    alert("Invalid YAML format");
+    return;
+  }
+
+  const codeFibQuestion = yamlData.questions.find(q => q.question_type === "code_fib");
+  if (!codeFibQuestion) {
+    alert("No 'code_fib' question found in YAML.");
+    return;
+  }
+
+  // Display question text
+  document.getElementById("question-text").textContent = codeFibQuestion.question_text;
+
+  // Render code with blanks
+  const rawCode = (codeFibQuestion.question_code || "").replace(/\//g, '//'); // Replace / with //
+  const rendered = renderCodeWithBlanks(rawCode);
+  document.getElementById("code-box").innerHTML = rendered;
+});
+
+function renderCodeWithBlanks(code) {
+  return code.replace(/<<([^<>]+)>>/g, (_, answer) => {
+    const length = answer.length;
+    return `<input class="blank-input" style="width:${length}ch" data-answer="${answer}">`;
+  });
+}
+</script>
+
+</body>
+</html>
